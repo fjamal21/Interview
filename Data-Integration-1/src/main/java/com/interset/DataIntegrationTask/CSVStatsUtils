@@ -96,8 +96,7 @@ public final class CSVStatsUtils {
       }
       usernames.add(value.getUser());
       files.add(value.getFile());
-      timestamp
-          .add(OffsetDateTime.parse(formatTimestamp(value.getTimestamp(), value.getTimeOffset())));
+      timestamp.add(formatTimestamp(value.getTimestamp(), value.getTimeOffset()));
       String mapping = ACTION_MAPPINGS.get(value.getActivity());
       if (Strings.isNullOrEmpty(mapping)) {
         noMapping++;
@@ -154,11 +153,11 @@ public final class CSVStatsUtils {
    * @param offset
    * @return
    */
-  private static String formatTimestamp(final String timestamp, final String offset) {
+  private static OffsetDateTime formatTimestamp(final String timestamp, final String offset) {
     LocalDateTime dateTime =
         LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern("MM/dd/uuuu hh:mm:ssa"));
     ZoneOffset zoneOffset = Strings.isNullOrEmpty(offset) ? ZoneOffset.UTC : ZoneOffset.of(offset);
-    String formattedTimestamp = dateTime.atOffset(zoneOffset).toString();
+    OffsetDateTime formattedTimestamp = dateTime.atOffset(zoneOffset);
     return formattedTimestamp;
   }
 }
