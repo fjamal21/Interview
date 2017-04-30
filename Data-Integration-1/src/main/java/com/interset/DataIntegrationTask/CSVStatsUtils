@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -35,10 +36,10 @@ import com.interset.DataIntegrationTask.metadata.StatsFilter;
 public final class CSVStatsUtils {
   private static final ObjectMapper objMapper = new ObjectMapper();
   private static final char DEFAULT_SEPARATOR = ',';
-  private static final Map<String, String> ACTION_MAPPINGS = ImmutableMap.<String, String>builder()
-      .put("createdDoc", "ADD").put("addedText", "ADD").put("changedText", "ADD")
-      .put("deletedDoc", "REMOVE").put("deletedText", "REMOVE").put("archived", "REMOVE")
-      .put("viewedDoc", "ACCESSED").build();
+  private static final Map<String, String> ACTION_MAPPINGS =
+      ImmutableMap.<String, String>builder().put("createdDoc", "ADD").put("addedText", "ADD")
+          .put("changedText", "ADD").put("deletedDoc", "REMOVE").put("deletedText", "REMOVE")
+          .put("archived", "REMOVE").put("viewedDoc", "ACCESSED").build();
 
   private CSVStatsUtils() {
     // restrict instantiation
@@ -72,7 +73,7 @@ public final class CSVStatsUtils {
     Set<String> usernames = new HashSet<>();
     Set<String> files = new HashSet<>();
     Set<Long> eventIds = new HashSet<>();
-    List<String> timestamp = new ArrayList<>();
+    List<OffsetDateTime> timestamp = new ArrayList<>();
     boolean first = true;
     if (!Files.exists(csvFile, LinkOption.NOFOLLOW_LINKS)) {
       Files.createFile(csvFile);
@@ -95,8 +96,8 @@ public final class CSVStatsUtils {
       }
       usernames.add(value.getUser());
       files.add(value.getFile());
-      timestamp.add(formatTimestamp(value.getTimestamp(), value.getTimeOffset()));
-      Collections.sort(timestamp);
+      timestamp
+          .add(OffsetDateTime.parse(formatTimestamp(value.getTimestamp(), value.getTimeOffset())));
       String mapping = ACTION_MAPPINGS.get(value.getActivity());
       if (Strings.isNullOrEmpty(mapping)) {
         noMapping++;
@@ -139,8 +140,8 @@ public final class CSVStatsUtils {
     actions.setREMOVE(Long.valueOf(multiset.count("REMOVE")));
     stats.setActions(actions);
     stats.setDroppedEvents(events);
-    stats.setStartDate(timestamp.get(0));
-    stats.setEndDate(timestamp.get(timestamp.size() - 1));
+    stats.setStartDate(Collections.min(timestamp).toString());
+    stats.setEndDate(Collections.max(timestamp).toString());
     System.out.println("Metrics Output:");
     System.out.println(objMapper.writerWithDefaultPrettyPrinter().writeValueAsString(stats));
   }
