@@ -24,10 +24,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multiset;
-import com.interset.DataIntegrationTask.metadata.Actions;
-import com.interset.DataIntegrationTask.metadata.DroppedEvents;
-import com.interset.DataIntegrationTask.metadata.Metadata;
-import com.interset.DataIntegrationTask.metadata.StatsFilter;
 
 /**
  * A simple utility that generates CSV and stats basis on the logic we have.
