@@ -13,7 +13,6 @@ import java.util.List;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.interset.DataIntegrationTask.metadata.Metadata;
 
 public class TaskRunner {
   private static final ObjectMapper objMapper = new ObjectMapper();
